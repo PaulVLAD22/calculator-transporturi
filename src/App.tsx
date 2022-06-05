@@ -1,4 +1,4 @@
-import * as React from "react"
+import * as React from "react";
 import {
   ChakraProvider,
   Box,
@@ -8,31 +8,56 @@ import {
   Code,
   Grid,
   theme,
-} from "@chakra-ui/react"
-import { ColorModeSwitcher } from "./ColorModeSwitcher"
-import { Logo } from "./Logo"
+  Input,
+  Center,
+  HStack,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  FormHelperText,
+  Checkbox,
+} from "@chakra-ui/react";
+import { ColorModeSwitcher } from "./ColorModeSwitcher";
+import { Logo } from "./Logo";
 
-export const App = () => (
-  <ChakraProvider theme={theme}>
-    <Box textAlign="center" fontSize="xl">
-      <Grid minH="100vh" p={3}>
-        <ColorModeSwitcher justifySelf="flex-end" />
-        <VStack spacing={8}>
-          <Logo h="40vmin" pointerEvents="none" />
-          <Text>
-            Edit <Code fontSize="xl">src/App.tsx</Code> and save to reload.
+export const App = () => {
+  const [grupaj, setGrupaj] = React.useState(false);
+  console.log(grupaj);
+  return (
+    <ChakraProvider theme={theme}>
+      <Center className="App" w="100vw" h="100vh" overflow="hidden">
+        <VStack
+          w="50%"
+          gap="20px"
+          boxShadow={"dark-lg"}
+          px="20"
+          py="10"
+          borderRadius={"3xl"}
+        >
+          <Text fontFamily={""} textAlign={"center"} fontSize="5xl">
+            Transportation Calculator
           </Text>
-          <Link
-            color="teal.500"
-            href="https://chakra-ui.com"
-            fontSize="2xl"
-            target="_blank"
-            rel="noopener noreferrer"
+          <ColorModeSwitcher />
+          <HStack justify={"space-around"} width="100%">
+            <FormControl>
+              <FormLabel htmlFor="">Importing from</FormLabel>
+              <Input id="export" type="text" />
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor="">Exporting to</FormLabel>
+              <Input id="export" type="text" />
+            </FormControl>
+          </HStack>
+          <Checkbox
+            size="lg"
+            onChange={() => {
+              setGrupaj(!grupaj);
+            }}
           >
-            Learn Chakra
-          </Link>
+            Grupaj
+          </Checkbox>
         </VStack>
-      </Grid>
-    </Box>
-  </ChakraProvider>
-)
+      </Center>
+    </ChakraProvider>
+  );
+};
