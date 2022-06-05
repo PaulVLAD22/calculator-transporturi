@@ -41,7 +41,7 @@ export const App = () => {
           <HStack justify={"space-around"} width="100%">
             <FormControl>
               <FormLabel htmlFor="">Importing from</FormLabel>
-              <Input id="export" type="text" />
+              <Input id="import" type="text" />
             </FormControl>
             <FormControl>
               <FormLabel htmlFor="">Exporting to</FormLabel>
