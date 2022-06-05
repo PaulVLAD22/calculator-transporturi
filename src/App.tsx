@@ -1,4 +1,5 @@
 import * as React from "react";
+import excel, { readFile } from "xlsx";
 import {
   ChakraProvider,
   Box,
@@ -22,7 +23,6 @@ import { Logo } from "./Logo";
 
 export const App = () => {
   const [grupaj, setGrupaj] = React.useState(false);
-  console.log(grupaj);
   return (
     <ChakraProvider theme={theme}>
       <Center className="App" w="100vw" h="100vh" overflow="hidden">
