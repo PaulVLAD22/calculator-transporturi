@@ -43,6 +43,12 @@ export const App = () => {
     setCarType(e.target.value as Car);
   };
   const calculatePrice = () => {
+    // pleaca din romania
+    if (importingCountry === "Romania") {
+    }
+    // vine din romania
+    else {
+    }
     setResult(500);
   };
   const changeImportingCountry = (e: React.ChangeEvent<HTMLSelectElement>) => {
