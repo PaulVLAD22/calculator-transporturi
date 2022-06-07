@@ -1,5 +1,4 @@
 import * as React from "react";
-import excel, { readFile } from "xlsx";
 import {
   ChakraProvider,
   Box,
@@ -21,7 +20,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { ColorModeSwitcher } from "./ColorModeSwitcher";
-import { Logo } from "./Logo";
+
 export enum Car {
   Camion = "camion",
   Sprinter = "sprinter",
@@ -30,8 +29,7 @@ export const App = () => {
   const [grupaj, setGrupaj] = React.useState(false);
   const [carType, setCarType] = React.useState<Car>();
   const [result, setResult] = React.useState<number>(0);
-  console.log(carType);
-  console.log(carType == Car.Camion);
+
   const toggleCarType = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCarType(e.target.value as Car);
   };
