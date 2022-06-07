@@ -20,12 +20,21 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { ColorModeSwitcher } from "./ColorModeSwitcher";
+import { prices } from "./prices";
 
 export enum Car {
   Camion = "camion",
   Sprinter = "sprinter",
 }
+let countries: (string | undefined)[] = [];
+
+prices.forEach(row => {
+  countries.push(row.Tara);
+});
+
 export const App = () => {
+  const [importingCountry, setImportingCountry] = React.useState<string>("");
+  const [exportingCountry, setExportingCountry] = React.useState<string>("");
   const [grupaj, setGrupaj] = React.useState(false);
   const [carType, setCarType] = React.useState<Car>();
   const [result, setResult] = React.useState<number>(0);
@@ -35,6 +44,12 @@ export const App = () => {
   };
   const calculatePrice = () => {
     setResult(500);
+  };
+  const changeImportingCountry = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setImportingCountry(e.target.value);
+  };
+  const changeExportingCountry = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setExportingCountry(e.target.value);
   };
 
   return (
@@ -54,12 +69,20 @@ export const App = () => {
           <ColorModeSwitcher />
           <HStack justify={"space-around"} width="100%">
             <FormControl>
-              <FormLabel htmlFor="">Importing from</FormLabel>
-              <Input id="import" type="text" />
+              <FormLabel htmlFor="km">From</FormLabel>
+              <Select onChange={changeImportingCountry}>
+                {countries.map(country => (
+                  <option value={country}>{country}</option>
+                ))}
+              </Select>
             </FormControl>
             <FormControl>
-              <FormLabel htmlFor="">Exporting to</FormLabel>
-              <Input id="export" type="text" />
+              <FormLabel htmlFor="km">To</FormLabel>
+              <Select onChange={changeExportingCountry}>
+                {countries.map(country => (
+                  <option value={country}>{country}</option>
+                ))}
+              </Select>
             </FormControl>
           </HStack>
           <HStack justify={"space-around"}>
@@ -76,7 +99,11 @@ export const App = () => {
               Grupaj
             </Checkbox>
           </HStack>
-          {grupaj === false ? (
+          {carType !== Car.Camion && carType !== Car.Sprinter ? (
+            <Text color="red.500" fontSize="lg">
+              Select a car type
+            </Text>
+          ) : grupaj === false ? (
             <FormControl>
               <FormLabel htmlFor="km">Kilometers</FormLabel>
               <Input id="km" type="number" />
@@ -94,11 +121,6 @@ export const App = () => {
                   <FormLabel htmlFor="kg">Kg</FormLabel>
                   <Input id="kg" type="number" />
                 </FormControl>
-              )}
-              {carType !== Car.Camion && carType !== Car.Sprinter && (
-                <Text color="red.500" fontSize="lg">
-                  Select a car type
-                </Text>
               )}
             </>
           )}
