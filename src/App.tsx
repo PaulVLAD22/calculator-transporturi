@@ -29,7 +29,9 @@ export enum Car {
 let countries: (string | undefined)[] = [];
 
 prices.forEach(row => {
-  countries.push(row.Tara);
+  if (row.Tara && row.Tara?.split(" ").length === 1) {
+    countries.push(row.Tara);
+  }
 });
 
 export const App = () => {
@@ -38,11 +40,17 @@ export const App = () => {
   const [grupaj, setGrupaj] = React.useState(false);
   const [carType, setCarType] = React.useState<Car>();
   const [result, setResult] = React.useState<number>(0);
+  const [error, setError] = React.useState<string>("");
 
   const toggleCarType = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCarType(e.target.value as Car);
   };
   const calculatePrice = () => {
+    if (importingCountry === "Romania") {
+    } else if (exportingCountry === "Romania") {
+    } else {
+      setError("Romania was not selected");
+    }
     setResult(500);
   };
   const changeImportingCountry = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -51,7 +59,6 @@ export const App = () => {
   const changeExportingCountry = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setExportingCountry(e.target.value);
   };
-
   return (
     <ChakraProvider theme={theme}>
       <Center className="App" w="100vw" h="100vh" overflow="hidden">
@@ -70,7 +77,11 @@ export const App = () => {
           <HStack justify={"space-around"} width="100%">
             <FormControl>
               <FormLabel htmlFor="km">From</FormLabel>
-              <Select onChange={changeImportingCountry}>
+              <Select
+                placeholder="Select a country"
+                value={importingCountry}
+                onChange={changeImportingCountry}
+              >
                 {countries.map(country => (
                   <option value={country}>{country}</option>
                 ))}
@@ -78,7 +89,11 @@ export const App = () => {
             </FormControl>
             <FormControl>
               <FormLabel htmlFor="km">To</FormLabel>
-              <Select onChange={changeExportingCountry}>
+              <Select
+                placeholder="Select a country"
+                value={exportingCountry}
+                onChange={changeExportingCountry}
+              >
                 {countries.map(country => (
                   <option value={country}>{country}</option>
                 ))}
@@ -125,7 +140,13 @@ export const App = () => {
             </>
           )}
           <Button onClick={calculatePrice}>Calculate</Button>
-          <Text fontSize={"2xl"}>{result === 0 ? "" : result}</Text>
+          {error !== "" ? (
+            <Text fontSize={"lg"} color="red.500">
+              {error}
+            </Text>
+          ) : (
+            <Text fontSize={"2xl"}>{result === 0 ? "" : result}</Text>
+          )}
         </VStack>
       </Center>
     </ChakraProvider>
