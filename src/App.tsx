@@ -23,8 +23,8 @@ import { ColorModeSwitcher } from "./ColorModeSwitcher";
 import { prices } from "./prices";
 
 export enum Car {
-  Camion = "camion",
-  Sprinter = "sprinter",
+  Camion = "Camion",
+  Sprinter = "Sprinter",
 }
 let countries: (string | undefined)[] = [];
 
@@ -39,19 +39,90 @@ export const App = () => {
   const [exportingCountry, setExportingCountry] = React.useState<string>("");
   const [grupaj, setGrupaj] = React.useState(false);
   const [carType, setCarType] = React.useState<Car>();
-  const [result, setResult] = React.useState<number>(0);
+  const [result, setResult] = React.useState<string>("");
   const [error, setError] = React.useState<string>("");
+  const [kilometers, setKilometers] = React.useState<number>();
+  const [kg, setKg] = React.useState<number>();
+  const [m, setM] = React.useState<number>();
 
   const toggleCarType = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCarType(e.target.value as Car);
   };
   const calculatePrice = () => {
+    setError("");
+
     if (importingCountry === "Romania") {
+      if (grupaj === false) {
+        if (kilometers) {
+          let exportingCountryValue = prices.find(
+            ob => ob.Tara === exportingCountry
+          );
+          if (exportingCountryValue) {
+            let valueInEuro =
+              Number(
+                exportingCountryValue[
+                  ("E" + carType + "/km") as keyof typeof exportingCountryValue
+                ]
+              ) * kilometers;
+
+            setResult(valueInEuro + " Euro / " + valueInEuro * 5 + " RON");
+          }
+        } else {
+          setError("No kilemeters");
+        }
+      }
+      // grupaj export
+      else {
+        if (carType === "Sprinter" && kg) {
+          let exportingCountryValue = prices.find(
+            ob => ob.Tara === exportingCountry
+          );
+          if (exportingCountryValue) {
+            let valueInEuro =
+              (Number(
+                exportingCountryValue[
+                  "ESprinter/100kg" as keyof typeof exportingCountryValue
+                ]
+              ) *
+                kg) /
+              100;
+
+            if (kg < 200) {
+              valueInEuro *= 1.5;
+            } else if (kg >= 200 && kg <= 300) {
+              valueInEuro *= 1.3;
+            }
+
+            setResult(valueInEuro + " Euro / " + valueInEuro * 5 + " RON");
+          }
+        } else if (carType === "Camion" && m) {
+          let exportingCountryValue = prices.find(
+            ob => ob.Tara === exportingCountry
+          );
+          if (exportingCountryValue) {
+            let valueInEuro =
+              Number(
+                exportingCountryValue[
+                  "ECamion/m" as keyof typeof exportingCountryValue
+                ]
+              ) * m;
+
+            if (m < 2) {
+              valueInEuro *= 1.5;
+            } else if (m >= 2 && m <= 3) {
+              valueInEuro *= 1.3;
+            }
+
+            setResult(valueInEuro + " Euro / " + valueInEuro * 5 + " RON");
+          }
+        } else {
+          setError("Wrong Input Combination");
+        }
+      }
     } else if (exportingCountry === "Romania") {
     } else {
       setError("Romania was not selected");
     }
-    setResult(500);
   };
   const changeImportingCountry = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setImportingCountry(e.target.value);
@@ -63,7 +134,7 @@ export const App = () => {
     <ChakraProvider theme={theme}>
       <Center className="App" w="100vw" h="100vh" overflow="hidden">
         <VStack
-          w="50%"
+          w={{ base: "100%", md: "50%" }}
           gap="10px"
           boxShadow={"dark-lg"}
           px="20"
@@ -95,15 +166,17 @@ export const App = () => {
                 onChange={changeExportingCountry}
               >
                 {countries.map(country => (
-                  <option value={country}>{country}</option>
+                  <option key={country} value={country}>
+                    {country}
+                  </option>
                 ))}
               </Select>
             </FormControl>
           </HStack>
           <HStack justify={"space-around"}>
             <Select onChange={toggleCarType} placeholder="Choose Car">
-              <option value="sprinter">Sprinter</option>
-              <option value="camion">Camion</option>
+              <option value="Sprinter">Sprinter</option>
+              <option value="Camion">Camion</option>
             </Select>
             <Checkbox
               size="lg"
@@ -121,20 +194,41 @@ export const App = () => {
           ) : grupaj === false ? (
             <FormControl>
               <FormLabel htmlFor="km">Kilometers</FormLabel>
-              <Input id="km" type="number" />
+              <Input
+                id="km"
+                type="number"
+                value={kilometers}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setKilometers(Number(e.target.value))
+                }
+              />
             </FormControl>
           ) : (
             <>
               {carType === Car.Camion && (
                 <FormControl>
                   <FormLabel htmlFor="m">Metrii</FormLabel>
-                  <Input id="m" type="number" />
+                  <Input
+                    id="m"
+                    type="number"
+                    value={m}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setM(Number(e.target.value))
+                    }
+                  />
                 </FormControl>
               )}
               {carType === Car.Sprinter && (
                 <FormControl>
                   <FormLabel htmlFor="kg">Kg</FormLabel>
-                  <Input id="kg" type="number" />
+                  <Input
+                    id="kg"
+                    type="number"
+                    value={kg}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setKg(Number(e.target.value))
+                    }
+                  />
                 </FormControl>
               )}
             </>
@@ -145,7 +239,7 @@ export const App = () => {
               {error}
             </Text>
           ) : (
-            <Text fontSize={"2xl"}>{result === 0 ? "" : result}</Text>
+            <Text fontSize={"2xl"}>{result}</Text>
           )}
         </VStack>
       </Center>
