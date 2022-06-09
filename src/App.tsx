@@ -54,44 +54,63 @@ export const App = () => {
       setError("Romania not selected!");
       return;
     }
+
+    let valueInEuro = 0;
+    if (importingCountry === "Romania" && exportingCountry === "Romania") {
+      if (!kilometers) {
+        setError("Kilometrii nu au fost introdusi");
+        return;
+      }
+      let preturiRomania = prices.find(ob => ob.Tara === "Romania");
+      if (preturiRomania)
+        valueInEuro =
+          Number(
+            preturiRomania[
+              ("I" + carType + "/km") as keyof typeof preturiRomania
+            ]
+          ) * kilometers;
+      setResult(valueInEuro + " Euro / " + valueInEuro * 5 + " RON");
+      return;
+    }
     if (grupaj === false) {
       if (kilometers) {
-        let exportingCountryValue = prices.find(
-          ob => ob.Tara === exportingCountry
-        );
-        if (exportingCountryValue) {
-          let valueInEuro;
-          if (importingCountry === "Romania")
+        if (importingCountry === "Romania") {
+          let exportingCountryValue = prices.find(
+            ob => ob.Tara === exportingCountry
+          );
+          if (exportingCountryValue)
             valueInEuro =
               Number(
                 exportingCountryValue[
                   ("E" + carType + "/km") as keyof typeof exportingCountryValue
                 ]
               ) * kilometers;
-          else {
+        } else {
+          let exportingCountryValue = prices.find(
+            ob => ob.Tara === importingCountry
+          );
+          if (exportingCountryValue)
             valueInEuro =
               Number(
                 exportingCountryValue[
                   ("I" + carType + "/km") as keyof typeof exportingCountryValue
                 ]
               ) * kilometers;
-          }
-
-          setResult(valueInEuro + " Euro / " + valueInEuro * 5 + " RON");
         }
+
+        setResult(valueInEuro + " Euro / " + valueInEuro * 5 + " RON");
       } else {
-        setError("No kilemeters");
+        setError("Kilometrii nu au fost introdusi");
       }
     }
     // grupaj export
     else {
       if (carType === "Sprinter" && kg) {
-        let exportingCountryValue = prices.find(
-          ob => ob.Tara === exportingCountry
-        );
-        if (exportingCountryValue) {
-          let valueInEuro;
-          if (importingCountry === "Romania") {
+        if (importingCountry === "Romania") {
+          let exportingCountryValue = prices.find(
+            ob => ob.Tara === exportingCountry
+          );
+          if (exportingCountryValue)
             valueInEuro =
               (Number(
                 exportingCountryValue[
@@ -100,7 +119,11 @@ export const App = () => {
               ) *
                 kg) /
               100;
-          } else {
+        } else {
+          let exportingCountryValue = prices.find(
+            ob => ob.Tara === importingCountry
+          );
+          if (exportingCountryValue)
             valueInEuro =
               (Number(
                 exportingCountryValue[
@@ -109,48 +132,49 @@ export const App = () => {
               ) *
                 kg) /
               100;
-          }
-
-          if (kg < 200) {
-            valueInEuro *= 1.5;
-          } else if (kg >= 200 && kg <= 300) {
-            valueInEuro *= 1.3;
-          }
-
-          setResult(valueInEuro + " Euro / " + valueInEuro * 5 + " RON");
         }
+
+        if (kg < 200) {
+          valueInEuro *= 1.5;
+        } else if (kg >= 200 && kg <= 300) {
+          valueInEuro *= 1.3;
+        }
+
+        setResult(valueInEuro + " Euro / " + valueInEuro * 5 + " RON");
       } else if (carType === "Camion" && m) {
-        let exportingCountryValue = prices.find(
-          ob => ob.Tara === exportingCountry
-        );
-        if (exportingCountryValue) {
-          let valueInEuro;
-          if (importingCountry === "Romania")
+        if (importingCountry === "Romania") {
+          let exportingCountryValue = prices.find(
+            ob => ob.Tara === exportingCountry
+          );
+          if (exportingCountryValue)
             valueInEuro =
               Number(
                 exportingCountryValue[
                   "ECamion/m" as keyof typeof exportingCountryValue
                 ]
               ) * m;
-          else {
+        } else {
+          let exportingCountryValue = prices.find(
+            ob => ob.Tara === importingCountry
+          );
+          if (exportingCountryValue)
             valueInEuro =
               Number(
                 exportingCountryValue[
                   "ICamion/m" as keyof typeof exportingCountryValue
                 ]
               ) * m;
-          }
-
-          if (m < 2) {
-            valueInEuro *= 1.5;
-          } else if (m >= 2 && m <= 3) {
-            valueInEuro *= 1.3;
-          }
-
-          setResult(valueInEuro + " Euro / " + valueInEuro * 5 + " RON");
         }
+
+        if (m < 2) {
+          valueInEuro *= 1.5;
+        } else if (m >= 2 && m <= 3) {
+          valueInEuro *= 1.3;
+        }
+
+        setResult(valueInEuro + " Euro / " + valueInEuro * 5 + " RON");
       } else {
-        setError("Wrong Input Combination");
+        setError("Combinatie de Input Gresita");
       }
     }
   };
@@ -177,7 +201,7 @@ export const App = () => {
           <ColorModeSwitcher />
           <HStack justify={"space-around"} width="100%">
             <FormControl>
-              <FormLabel htmlFor="km">From</FormLabel>
+              <FormLabel htmlFor="km">De la</FormLabel>
               <Select
                 placeholder="Select a country"
                 value={importingCountry}
@@ -189,7 +213,7 @@ export const App = () => {
               </Select>
             </FormControl>
             <FormControl>
-              <FormLabel htmlFor="km">To</FormLabel>
+              <FormLabel htmlFor="km">Catre</FormLabel>
               <Select
                 placeholder="Select a country"
                 value={exportingCountry}
@@ -219,11 +243,11 @@ export const App = () => {
           </HStack>
           {carType !== Car.Camion && carType !== Car.Sprinter ? (
             <Text color="red.500" fontSize="lg">
-              Select a car type
+              Alege tipul de vehicul
             </Text>
           ) : grupaj === false ? (
             <FormControl>
-              <FormLabel htmlFor="km">Kilometers</FormLabel>
+              <FormLabel htmlFor="km">Kilometrii</FormLabel>
               <Input
                 id="km"
                 type="number"
