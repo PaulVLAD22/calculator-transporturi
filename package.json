@@ -1,4 +1,5 @@
 {
+  "homepage": "http://paulvlad22.github.io/calculator-transporturi",
   "name": "calculator-transporturi",
   "version": "0.1.0",
   "private": true,
@@ -23,6 +24,8 @@
     "xlsx": "^0.18.5"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -46,6 +49,7 @@
     "@typescript-eslint/parser": "^5.27.0",
     "add": "^2.0.6",
     "eslint": "^8.17.0",
+    "gh-pages": "^4.0.0",
     "or": "^0.2.0",
     "prettier": "^2.6.2",
     "yarn": "^1.22.18"

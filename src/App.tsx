@@ -50,35 +50,49 @@ export const App = () => {
   };
   const calculatePrice = () => {
     setError("");
-
-    if (importingCountry === "Romania") {
-      if (grupaj === false) {
-        if (kilometers) {
-          let exportingCountryValue = prices.find(
-            ob => ob.Tara === exportingCountry
-          );
-          if (exportingCountryValue) {
-            let valueInEuro =
+    if (importingCountry !== "Romania" && exportingCountry !== "Romania") {
+      setError("Romania not selected!");
+      return;
+    }
+    if (grupaj === false) {
+      if (kilometers) {
+        let exportingCountryValue = prices.find(
+          ob => ob.Tara === exportingCountry
+        );
+        if (exportingCountryValue) {
+          let valueInEuro;
+          if (importingCountry === "Romania")
+            valueInEuro =
               Number(
                 exportingCountryValue[
                   ("E" + carType + "/km") as keyof typeof exportingCountryValue
                 ]
               ) * kilometers;
-
-            setResult(valueInEuro + " Euro / " + valueInEuro * 5 + " RON");
+          else {
+            valueInEuro =
+              Number(
+                exportingCountryValue[
+                  ("I" + carType + "/km") as keyof typeof exportingCountryValue
+                ]
+              ) * kilometers;
           }
-        } else {
-          setError("No kilemeters");
+
+          setResult(valueInEuro + " Euro / " + valueInEuro * 5 + " RON");
         }
+      } else {
+        setError("No kilemeters");
       }
-      // grupaj export
-      else {
-        if (carType === "Sprinter" && kg) {
-          let exportingCountryValue = prices.find(
-            ob => ob.Tara === exportingCountry
-          );
-          if (exportingCountryValue) {
-            let valueInEuro =
+    }
+    // grupaj export
+    else {
+      if (carType === "Sprinter" && kg) {
+        let exportingCountryValue = prices.find(
+          ob => ob.Tara === exportingCountry
+        );
+        if (exportingCountryValue) {
+          let valueInEuro;
+          if (importingCountry === "Romania") {
+            valueInEuro =
               (Number(
                 exportingCountryValue[
                   "ESprinter/100kg" as keyof typeof exportingCountryValue
@@ -86,42 +100,58 @@ export const App = () => {
               ) *
                 kg) /
               100;
-
-            if (kg < 200) {
-              valueInEuro *= 1.5;
-            } else if (kg >= 200 && kg <= 300) {
-              valueInEuro *= 1.3;
-            }
-
-            setResult(valueInEuro + " Euro / " + valueInEuro * 5 + " RON");
+          } else {
+            valueInEuro =
+              (Number(
+                exportingCountryValue[
+                  "ISprinter/100kg" as keyof typeof exportingCountryValue
+                ]
+              ) *
+                kg) /
+              100;
           }
-        } else if (carType === "Camion" && m) {
-          let exportingCountryValue = prices.find(
-            ob => ob.Tara === exportingCountry
-          );
-          if (exportingCountryValue) {
-            let valueInEuro =
+
+          if (kg < 200) {
+            valueInEuro *= 1.5;
+          } else if (kg >= 200 && kg <= 300) {
+            valueInEuro *= 1.3;
+          }
+
+          setResult(valueInEuro + " Euro / " + valueInEuro * 5 + " RON");
+        }
+      } else if (carType === "Camion" && m) {
+        let exportingCountryValue = prices.find(
+          ob => ob.Tara === exportingCountry
+        );
+        if (exportingCountryValue) {
+          let valueInEuro;
+          if (importingCountry === "Romania")
+            valueInEuro =
               Number(
                 exportingCountryValue[
                   "ECamion/m" as keyof typeof exportingCountryValue
                 ]
               ) * m;
-
-            if (m < 2) {
-              valueInEuro *= 1.5;
-            } else if (m >= 2 && m <= 3) {
-              valueInEuro *= 1.3;
-            }
-
-            setResult(valueInEuro + " Euro / " + valueInEuro * 5 + " RON");
+          else {
+            valueInEuro =
+              Number(
+                exportingCountryValue[
+                  "ICamion/m" as keyof typeof exportingCountryValue
+                ]
+              ) * m;
           }
-        } else {
-          setError("Wrong Input Combination");
+
+          if (m < 2) {
+            valueInEuro *= 1.5;
+          } else if (m >= 2 && m <= 3) {
+            valueInEuro *= 1.3;
+          }
+
+          setResult(valueInEuro + " Euro / " + valueInEuro * 5 + " RON");
         }
+      } else {
+        setError("Wrong Input Combination");
       }
-    } else if (exportingCountry === "Romania") {
-    } else {
-      setError("Romania was not selected");
     }
   };
   const changeImportingCountry = (e: React.ChangeEvent<HTMLSelectElement>) => {
