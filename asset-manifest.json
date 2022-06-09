@@ -1,0 +1,12 @@
+{
+  "files": {
+    "main.js": "/calculator-transporturi/static/js/main.6431468a.js",
+    "static/js/377.e0612acc.chunk.js": "/calculator-transporturi/static/js/377.e0612acc.chunk.js",
+    "index.html": "/calculator-transporturi/index.html",
+    "main.6431468a.js.map": "/calculator-transporturi/static/js/main.6431468a.js.map",
+    "377.e0612acc.chunk.js.map": "/calculator-transporturi/static/js/377.e0612acc.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.6431468a.js"
+  ]
+}
