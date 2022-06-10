@@ -35,13 +35,16 @@ prices.forEach(row => {
   }
 });
 
+const debug = true;
+
 export const App = () => {
-  const [accessGranted, setAccessGranted] = React.useState<boolean>(false);
+  const [accessGranted, setAccessGranted] = React.useState<boolean>(debug);
   const [importingCountry, setImportingCountry] = React.useState<string>("");
   const [exportingCountry, setExportingCountry] = React.useState<string>("");
+  const [frigoOrAdr, setFrigoOrAdr] = React.useState<boolean>(false);
   const [grupaj, setGrupaj] = React.useState(false);
   const [carType, setCarType] = React.useState<Car>();
-  const [result, setResult] = React.useState<string>("");
+  const [result, setResult] = React.useState<number>(0);
   const [error, setError] = React.useState<string>("");
   const [kilometers, setKilometers] = React.useState<number>();
   const [kg, setKg] = React.useState<number>();
@@ -52,13 +55,30 @@ export const App = () => {
   };
   const calculatePrice = () => {
     setError("");
-    if (importingCountry !== "Romania" && exportingCountry !== "Romania") {
-      setError("Romania not selected!");
-      return;
-    }
-
     let valueInEuro = 0;
-    if (importingCountry === "Romania" && exportingCountry === "Romania") {
+    // caz 1 nu include romania
+    if (importingCountry !== "Romania" && exportingCountry !== "Romania") {
+      if (!kilometers) {
+        setError("Kilometrii nu au fost introdusi");
+        return;
+      }
+      if (grupaj === false) {
+        if (carType === "Camion") {
+          valueInEuro = kilometers * 1.3;
+        } else {
+          valueInEuro = kilometers * 0.5;
+        }
+      } else {
+        if (carType === "Sprinter" && kg) {
+          valueInEuro = (kg * 120) / 100;
+        } else if (carType === "Camion" && m) {
+          valueInEuro = m * 225;
+        }
+      }
+    } else if (
+      importingCountry === "Romania" &&
+      exportingCountry === "Romania"
+    ) {
       if (!kilometers) {
         setError("Kilometrii nu au fost introdusi");
         return;
@@ -71,114 +91,118 @@ export const App = () => {
               ("I" + carType + "/km") as keyof typeof preturiRomania
             ]
           ) * kilometers;
-      setResult(valueInEuro + " Euro / " + valueInEuro * 5 + " RON");
-      return;
-    }
-    if (grupaj === false) {
-      if (kilometers) {
-        if (importingCountry === "Romania") {
-          let exportingCountryValue = prices.find(
-            ob => ob.Tara === exportingCountry
-          );
-          if (exportingCountryValue)
-            valueInEuro =
-              Number(
-                exportingCountryValue[
-                  ("E" + carType + "/km") as keyof typeof exportingCountryValue
-                ]
-              ) * kilometers;
-        } else {
-          let exportingCountryValue = prices.find(
-            ob => ob.Tara === importingCountry
-          );
-          if (exportingCountryValue)
-            valueInEuro =
-              Number(
-                exportingCountryValue[
-                  ("I" + carType + "/km") as keyof typeof exportingCountryValue
-                ]
-              ) * kilometers;
-        }
 
-        setResult(valueInEuro + " Euro / " + valueInEuro * 5 + " RON");
-      } else {
-        setError("Kilometrii nu au fost introdusi");
+      // romania + alta tara
+    } else {
+      if (grupaj === false) {
+        if (kilometers) {
+          if (importingCountry === "Romania") {
+            let exportingCountryValue = prices.find(
+              ob => ob.Tara === exportingCountry
+            );
+            if (exportingCountryValue)
+              valueInEuro =
+                Number(
+                  exportingCountryValue[
+                    ("E" +
+                      carType +
+                      "/km") as keyof typeof exportingCountryValue
+                  ]
+                ) * kilometers;
+          } else {
+            let exportingCountryValue = prices.find(
+              ob => ob.Tara === importingCountry
+            );
+            if (exportingCountryValue)
+              valueInEuro =
+                Number(
+                  exportingCountryValue[
+                    ("I" +
+                      carType +
+                      "/km") as keyof typeof exportingCountryValue
+                  ]
+                ) * kilometers;
+          }
+        } else {
+          setError("Kilometrii nu au fost introdusi");
+        }
+      }
+      // grupaj export
+      else {
+        if (carType === "Sprinter" && kg) {
+          if (importingCountry === "Romania") {
+            let exportingCountryValue = prices.find(
+              ob => ob.Tara === exportingCountry
+            );
+            if (exportingCountryValue)
+              valueInEuro =
+                (Number(
+                  exportingCountryValue[
+                    "ESprinter/100kg" as keyof typeof exportingCountryValue
+                  ]
+                ) *
+                  kg) /
+                100;
+          } else {
+            let exportingCountryValue = prices.find(
+              ob => ob.Tara === importingCountry
+            );
+            if (exportingCountryValue)
+              valueInEuro =
+                (Number(
+                  exportingCountryValue[
+                    "ISprinter/100kg" as keyof typeof exportingCountryValue
+                  ]
+                ) *
+                  kg) /
+                100;
+          }
+
+          if (kg < 200) {
+            valueInEuro *= 1.5;
+          } else if (kg >= 200 && kg <= 300) {
+            valueInEuro *= 1.3;
+          }
+        } else if (carType === "Camion" && m) {
+          if (importingCountry === "Romania") {
+            let exportingCountryValue = prices.find(
+              ob => ob.Tara === exportingCountry
+            );
+            if (exportingCountryValue)
+              valueInEuro =
+                Number(
+                  exportingCountryValue[
+                    "ECamion/m" as keyof typeof exportingCountryValue
+                  ]
+                ) * m;
+          } else {
+            let exportingCountryValue = prices.find(
+              ob => ob.Tara === importingCountry
+            );
+            if (exportingCountryValue)
+              valueInEuro =
+                Number(
+                  exportingCountryValue[
+                    "ICamion/m" as keyof typeof exportingCountryValue
+                  ]
+                ) * m;
+          }
+
+          if (m < 2) {
+            valueInEuro *= 1.5;
+          } else if (m >= 2 && m <= 3) {
+            valueInEuro *= 1.3;
+          }
+        } else {
+          setError("Combinatie de Input Gresita");
+        }
       }
     }
-    // grupaj export
-    else {
-      if (carType === "Sprinter" && kg) {
-        if (importingCountry === "Romania") {
-          let exportingCountryValue = prices.find(
-            ob => ob.Tara === exportingCountry
-          );
-          if (exportingCountryValue)
-            valueInEuro =
-              (Number(
-                exportingCountryValue[
-                  "ESprinter/100kg" as keyof typeof exportingCountryValue
-                ]
-              ) *
-                kg) /
-              100;
-        } else {
-          let exportingCountryValue = prices.find(
-            ob => ob.Tara === importingCountry
-          );
-          if (exportingCountryValue)
-            valueInEuro =
-              (Number(
-                exportingCountryValue[
-                  "ISprinter/100kg" as keyof typeof exportingCountryValue
-                ]
-              ) *
-                kg) /
-              100;
-        }
-
-        if (kg < 200) {
-          valueInEuro *= 1.5;
-        } else if (kg >= 200 && kg <= 300) {
-          valueInEuro *= 1.3;
-        }
-
-        setResult(valueInEuro + " Euro / " + valueInEuro * 5 + " RON");
-      } else if (carType === "Camion" && m) {
-        if (importingCountry === "Romania") {
-          let exportingCountryValue = prices.find(
-            ob => ob.Tara === exportingCountry
-          );
-          if (exportingCountryValue)
-            valueInEuro =
-              Number(
-                exportingCountryValue[
-                  "ECamion/m" as keyof typeof exportingCountryValue
-                ]
-              ) * m;
-        } else {
-          let exportingCountryValue = prices.find(
-            ob => ob.Tara === importingCountry
-          );
-          if (exportingCountryValue)
-            valueInEuro =
-              Number(
-                exportingCountryValue[
-                  "ICamion/m" as keyof typeof exportingCountryValue
-                ]
-              ) * m;
-        }
-
-        if (m < 2) {
-          valueInEuro *= 1.5;
-        } else if (m >= 2 && m <= 3) {
-          valueInEuro *= 1.3;
-        }
-
-        setResult(valueInEuro + " Euro / " + valueInEuro * 5 + " RON");
-      } else {
-        setError("Combinatie de Input Gresita");
-      }
+    if (frigoOrAdr) {
+      console.log("SALUT");
+      valueInEuro *= 1.2;
     }
+    if (valueInEuro !== 0) setResult(valueInEuro);
   };
   const changeImportingCountry = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setImportingCountry(e.target.value);
@@ -255,6 +279,14 @@ export const App = () => {
               >
                 Grupaj
               </Checkbox>
+              <Checkbox
+                size="lg"
+                onChange={() => {
+                  setFrigoOrAdr(!frigoOrAdr);
+                }}
+              >
+                FRIGO/ADR
+              </Checkbox>
             </HStack>
             {carType !== Car.Camion && carType !== Car.Sprinter ? (
               <Text color="red.500" fontSize="lg">
@@ -262,7 +294,7 @@ export const App = () => {
               </Text>
             ) : grupaj === false ? (
               <FormControl>
-                <FormLabel htmlFor="km">Kilometrii</FormLabel>
+                <FormLabel htmlFor="km">km</FormLabel>
                 <Input
                   id="km"
                   type="number"
@@ -276,7 +308,7 @@ export const App = () => {
               <>
                 {carType === Car.Camion && (
                   <FormControl>
-                    <FormLabel htmlFor="m">Metrii</FormLabel>
+                    <FormLabel htmlFor="m">m podea</FormLabel>
                     <Input
                       id="m"
                       type="number"
@@ -308,7 +340,14 @@ export const App = () => {
                 {error}
               </Text>
             ) : (
-              <Text fontSize={"2xl"}>{result}</Text>
+              result !== 0 && (
+                <Text fontSize={"2xl"}>
+                  {result.toString() +
+                    " Euro / " +
+                    (result * 5).toString() +
+                    " RON"}
+                </Text>
+              )
             )}
           </VStack>
         )}
