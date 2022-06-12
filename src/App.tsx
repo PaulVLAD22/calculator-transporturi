@@ -35,7 +35,7 @@ prices.forEach(row => {
   }
 });
 
-const debug = true;
+const debug = false;
 
 export const App = () => {
   const [accessGranted, setAccessGranted] = React.useState<boolean>(debug);
