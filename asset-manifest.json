@@ -1,12 +1,12 @@
 {
   "files": {
-    "main.js": "/calculator-transporturi/static/js/main.9ff74837.js",
+    "main.js": "/calculator-transporturi/static/js/main.61585f76.js",
     "static/js/377.e0612acc.chunk.js": "/calculator-transporturi/static/js/377.e0612acc.chunk.js",
     "index.html": "/calculator-transporturi/index.html",
-    "main.9ff74837.js.map": "/calculator-transporturi/static/js/main.9ff74837.js.map",
+    "main.61585f76.js.map": "/calculator-transporturi/static/js/main.61585f76.js.map",
     "377.e0612acc.chunk.js.map": "/calculator-transporturi/static/js/377.e0612acc.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/main.9ff74837.js"
+    "static/js/main.61585f76.js"
   ]
 }
