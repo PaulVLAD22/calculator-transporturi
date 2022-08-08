@@ -11,7 +11,7 @@
 # production
 /build
 src/secrets.tsx
-
+/src/secrets.ts
 # misc
 .DS_Store
 .env.local
